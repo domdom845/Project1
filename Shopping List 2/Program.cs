@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MySql.Data.MySqlClient;
 
 
 namespace Shopping_List_2
@@ -16,10 +17,10 @@ namespace Shopping_List_2
 
             var y = Convert.ToChar(Console.ReadLine());
             start(y);
-            
 
-            
-            
+
+//Comments
+
 
         }
 
@@ -84,10 +85,50 @@ namespace Shopping_List_2
                 temp = "High";
             }
             Console.WriteLine(temp);
-            Console.WriteLine("Item " + value  + " added to list");
+            Console.WriteLine("Item " + value + " added to list");
+
+            string date = DateTime.UtcNow.ToString("MM-dd-yyyy");
+
+            bool purchased = false;
+
+            Random random = new Random();
+
+            int generatedId1 = random.Next(10);
+            int generatedId2 = random.Next(10);
+            int generatedId3 = random.Next(10);
+
+            int id = generatedId1 + generatedId2 + generatedId3;
+
+
+            using (MySqlConnection con = new MySqlConnection())
+            {
+                con.ConnectionString = "Server=localhost;Database=mydatabase;Uid=root;Pwd=abc123;";
+
+
+                Console.WriteLine("New Item Add");
+
+                con.ConnectionString = "Server=localhost;Database=mydatabase;Uid=root;Pwd=abc123;";
+                string sql = "INSERT INTO shoppinglist (id, Name, category,  priority, dateAdded, purchased) VALUES (@id, @Name,@category, @priority, @dateAdded, @purchased)";
+                MySqlCommand cmd = new MySqlCommand(sql, con);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@Name", value);
+                cmd.Parameters.AddWithValue("@category", category);
+
+                cmd.Parameters.AddWithValue("@priority", temp);
+                cmd.Parameters.AddWithValue("@dateAdded", date);
+                cmd.Parameters.AddWithValue("@purchased", purchased);
+
+
+                cmd.Connection = con;
+                con.Open();
+                cmd.ExecuteNonQuery();
+
+
+
+            }
 
         }
-        
+
         static void ListFrame(string value)
         {
             var temp = "";
@@ -107,7 +148,7 @@ namespace Shopping_List_2
             {
                 Console.WriteLine(i);
             }
-         
+
 
             Console.WriteLine("***********************************************************************************************************************");
         }
@@ -180,6 +221,7 @@ namespace Shopping_List_2
         {
             Console.WriteLine("Select Item # to Remove");
             string str = Console.ReadLine();
+            RemoveData(Convert.ToInt32(str));
 
         }
 
@@ -192,9 +234,8 @@ namespace Shopping_List_2
             var temp = Console.ReadLine();
             string choice = Condition(temp);
             Priority(str, choice);
-            
-        }
 
+        }
         private static string Condition(string value)
         {
             var temp = "";
@@ -215,7 +256,7 @@ namespace Shopping_List_2
             {
                 temp = "Household";
             }
-             if (value == "5")
+            if (value == "5")
             {
                 temp = "Jewelry";
             }
@@ -229,6 +270,25 @@ namespace Shopping_List_2
 
             }
             return temp;
+        }
+        public static void RemoveData(int id)
+        {
+            using (MySqlConnection con = new MySqlConnection())
+            {
+                Console.WriteLine("Item was removed ");
+
+                con.ConnectionString = "Server=localhost;Database=mydatabase;Uid=root;Pwd=abc123;";
+
+                string sql = "DELETE  FROM shoppinglist WHERE id =" + id + "";
+
+                MySqlCommand cmd = new MySqlCommand(sql, con);
+
+                cmd.Connection = con;
+                con.Open();
+                cmd.ExecuteNonQuery();
+                con.Close();
+
+            }
         }
     }
 }
