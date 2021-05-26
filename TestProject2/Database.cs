@@ -245,7 +245,7 @@ namespace Shopping_List_2
             return true;
 
         }
-        public void storeData(int id, string productName, string category, string priority, string dateAdded, string purchased)
+        public bool storeData(int id, string productName, string category, string priority, string dateAdded, string purchased)
         {
 
 
@@ -265,7 +265,9 @@ namespace Shopping_List_2
             cmd.Connection = this.conn;
             this.conn.Open();
             cmd.ExecuteNonQuery();
+
             this.conn.Close();
+            return true;
 
 
         }
